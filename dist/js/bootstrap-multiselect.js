@@ -430,7 +430,8 @@
                 li: '<li><a tabindex="0"><label></label></a></li>',
                 divider: '<li class="multiselect-item divider"></li>',
                 liGroup: '<li class="multiselect-item multiselect-group"><label></label></li>'
-            }
+            },
+            customElements: false
         },
 
         constructor: Multiselect,
@@ -855,14 +856,31 @@
             $label.addClass(inputType);
             $li.addClass(classes);
 
-            if (this.options.enableHTML) {
-                $label.html(" " + label);
-            }
-            else {
-                $label.text(" " + label);
-            }
-
             var $checkbox = $('<input/>').attr('type', inputType);
+            
+            if(this.options.customElements) {
+                // Create Bootstrap 4 custom elements
+                $checkbox.addClass('custom-control-input');
+                
+                var $ccIndicator = $('<span />').addClass('custom-control-indicator');
+                
+                var $ccDescription = $('<span />').addClass('custom-control-description');
+                if (this.options.enableHTML) {
+                    $ccDescription.html(label);
+                }
+                else {
+                    $ccDescription.text(label);
+                }
+                
+                $label.addClass('custom-control custom-' + inputType).append($ccIndicator).append($ccDescription);
+            } else {
+                if (this.options.enableHTML) {
+                    $label.html(" " + label);
+                }
+                else {
+                    $label.text(" " + label);
+                }
+            }
 
             var name = this.options.checkboxName($element);
             if (name) {
@@ -919,7 +937,7 @@
         createOptgroup: function(group) {
             var label = $(group).attr("label");
             var value = $(group).attr("value");
-            var $li = $('<li class="multiselect-item multiselect-group"><a href="javascript:void(0);"><label><b></b></label></a></li>');
+            var $li = $('<li class="multiselect-item multiselect-group"><a><label><b></b></label></a></li>');
 
             var classes = this.options.optionClass(group);
             $li.addClass(classes);
@@ -973,13 +991,6 @@
                 var $li = $(this.options.templates.li);
                 $('label', $li).addClass("checkbox");
 
-                if (this.options.enableHTML) {
-                    $('label', $li).html(" " + this.options.selectAllText);
-                }
-                else {
-                    $('label', $li).text(" " + this.options.selectAllText);
-                }
-
                 if (this.options.selectAllName) {
                     $('label', $li).prepend('<input type="checkbox" name="' + this.options.selectAllName + '" />');
                 }
@@ -994,6 +1005,30 @@
                 $checkbox.parent().parent()
                     .addClass('multiselect-all');
 
+                if(this.options.customElements) {
+                    // Create Bootstrap 4 custom elements
+                    $checkbox.addClass('custom-control-input');
+                    
+                    var $ccIndicator = $('<span />').addClass('custom-control-indicator');
+                    
+                    var $ccDescription = $('<span />').addClass('custom-control-description');
+                    if (this.options.enableHTML) {
+                        $ccDescription.html(this.options.selectAllText);
+                    }
+                    else {
+                        $ccDescription.text(this.options.selectAllText);
+                    }
+                    
+                    $('label', $li).addClass('custom-control custom-checkbox').append($ccIndicator).append($ccDescription);
+                } else {
+                    if (this.options.enableHTML) {
+                        $('label', $li).html(" " + this.options.selectAllText);
+                    }
+                    else {
+                        $('label', $li).text(" " + this.options.selectAllText);
+                    }
+                }
+                
                 this.$ul.prepend($li);
 
                 $checkbox.prop('checked', false);
